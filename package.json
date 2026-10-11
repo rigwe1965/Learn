@@ -14,6 +14,8 @@
     "db:seed": "tsx src/db/seed.ts"
   },
   "dependencies": {
+    "@neon/config": "^1.8.6",
+    "@neon/env": "^1.5.3",
     "@neondatabase/serverless": "^1.2.0",
     "better-auth": "^1.7.7",
     "drizzle-orm": "^0.45.4",
