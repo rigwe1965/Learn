@@ -1,26 +1,257 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/*
+ * Design system — luxury-editorial look: monochrome, square corners,
+ * hairline borders, small tracked uppercase UI text, generous whitespace.
+ */
+
+/* ---------- Tokens ---------- */
+@theme {
+  /* Fonts (next/font variables are set in layout.tsx) */
+  --font-sans: var(--font-inter), "Helvetica Neue", Arial, sans-serif;
+  --font-display: var(--font-cormorant), "Times New Roman", serif;
+
+  /* Colors: near-monochrome */
+  --color-background: #ffffff;
+  --color-foreground: #000000;
+  --color-muted: #6b6b6b;       /* secondary text */
+  --color-subtle: #f5f5f3;      /* image placeholders, soft panels */
+  --color-line: #e3e3e0;        /* hairline borders */
+  --color-line-strong: #000000; /* emphasised borders, outlined buttons */
+  --color-accent: #1f3d2b;      /* sparing deep-green accent */
+  --color-danger: #b3261e;
+  --color-inverse: #ffffff;
+
+  /* Type scale: small UI text, restrained headings */
+  --text-2xs: 0.6875rem;
+  --text-2xs--line-height: 1rem;
+  --text-xs: 0.75rem;
+  --text-xs--line-height: 1.125rem;
+  --text-sm: 0.875rem;
+  --text-sm--line-height: 1.375rem;
+  --text-base: 1rem;
+  --text-base--line-height: 1.625rem;
+  --text-xl: 1.375rem;
+  --text-xl--line-height: 1.75rem;
+  --text-3xl: 2rem;
+  --text-3xl--line-height: 2.5rem;
+  --text-5xl: 3.5rem;
+  --text-5xl--line-height: 1.05;
+
+  --tracking-label: 0.14em;   /* uppercase labels / nav / buttons */
+  --tracking-display: -0.01em;
+
+  /* Spacing: 4px base, plus gutters and section rhythm */
+  --spacing: 0.25rem;
+  --spacing-gutter: 1rem;
+  --spacing-gutter-lg: 2.5rem;
+  --spacing-section: 4rem;
+  --spacing-section-lg: 7rem;
+
+  /* Layout */
+  --container-page: 96rem;
+  --container-prose: 40rem;
+  --header-height: 4rem;
+
+  /* Square corners everywhere */
+  --radius-xs: 0;
+  --radius-sm: 0;
+  --radius-md: 0;
+  --radius-lg: 0;
+  --radius-xl: 0;
+
+  /* Motion */
+  --ease-soft: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --duration-ui: 200ms;
+
+  --breakpoint-xs: 30rem;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* ---------- Base ---------- */
+@layer base {
+  html {
+    background: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-size: var(--text-sm);
+    line-height: var(--text-sm--line-height);
+    font-weight: 400;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    letter-spacing: var(--tracking-display);
+    text-wrap: balance;
+  }
+  h1 { font-size: var(--text-3xl); line-height: var(--text-3xl--line-height); }
+  h2 { font-size: var(--text-xl); line-height: var(--text-xl--line-height); }
+  h3, h4 { font-size: var(--text-base); line-height: var(--text-base--line-height); }
+  @media (min-width: 48rem) {
+    h1 { font-size: var(--text-5xl); line-height: var(--text-5xl--line-height); }
+    h2 { font-size: var(--text-3xl); line-height: var(--text-3xl--line-height); }
+  }
+
+  /* Links inherit colour; thin underline on hover */
+  a {
+    color: inherit;
+    text-decoration: none;
+    transition: opacity var(--duration-ui) var(--ease-soft);
+  }
+  a:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    text-decoration-thickness: 1px;
+  }
+
+  img, video { display: block; max-width: 100%; height: auto; }
+
+  hr { border: 0; border-top: 1px solid var(--color-line); }
+
+  ::selection { background: var(--color-foreground); color: var(--color-inverse); }
+
+  :focus-visible {
+    outline: 1px solid var(--color-foreground);
+    outline-offset: 3px;
+  }
+
+  /* Underline-only form fields */
+  input, select, textarea {
+    border-radius: 0;
+    border: 0;
+    border-bottom: 1px solid var(--color-line-strong);
+    background: transparent;
+    padding: 0.75rem 0;
+    font: inherit;
+    width: 100%;
+  }
+  input::placeholder { color: var(--color-muted); }
+  input:focus, select:focus, textarea:focus { outline: none; border-bottom-width: 2px; }
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* ---------- Components ---------- */
+@layer components {
+  /* Wide page container with responsive gutters */
+  .container-page {
+    width: 100%;
+    max-width: var(--container-page);
+    margin-inline: auto;
+    padding-inline: var(--spacing-gutter);
+  }
+  @media (min-width: 64rem) {
+    .container-page { padding-inline: var(--spacing-gutter-lg); }
+  }
+  .container-prose {
+    max-width: var(--container-prose);
+    margin-inline: auto;
+    padding-inline: var(--spacing-gutter);
+  }
+
+  /* Vertical rhythm between page sections */
+  .section { padding-block: var(--spacing-section); }
+  @media (min-width: 64rem) {
+    .section { padding-block: var(--spacing-section-lg); }
+  }
+
+  /* Small tracked uppercase text: nav, labels */
+  .label {
+    font-size: var(--text-2xs);
+    line-height: var(--text-2xs--line-height);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-label);
+    font-weight: 500;
+  }
+  .display { font-family: var(--font-display); letter-spacing: var(--tracking-display); }
+
+  /* Buttons: rectangular, uppercase, flat */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 3rem;
+    padding: 0.75rem 2rem;
+    border: 1px solid var(--color-line-strong);
+    background: var(--color-foreground);
+    color: var(--color-inverse);
+    font-size: var(--text-2xs);
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-label);
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color var(--duration-ui) var(--ease-soft),
+      color var(--duration-ui) var(--ease-soft);
+  }
+  .btn:hover {
+    background: var(--color-inverse);
+    color: var(--color-foreground);
+    text-decoration: none;
+  }
+  .btn:disabled, .btn[aria-disabled="true"] { opacity: 0.4; pointer-events: none; }
+  .btn-outline { background: transparent; color: var(--color-foreground); }
+  .btn-outline:hover { background: var(--color-foreground); color: var(--color-inverse); }
+  .btn-block { width: 100%; }
+
+  /* Text link with permanent thin underline */
+  .link {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    text-decoration-thickness: 1px;
+  }
+  .link:hover { opacity: 0.6; }
+
+  /* Hairline dividers between stacked children */
+  .divider-y > * + * { border-top: 1px solid var(--color-line); }
+
+  /* Product grid: 2 cols mobile → 3 → 4, separated by 1px hairlines */
+  .product-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1px;
+    background: var(--color-line);
+  }
+  .product-grid > * { background: var(--color-background); }
+  @media (min-width: 48rem) {
+    .product-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
+  /* 3 columns: show a multiple of 3 so the last row has no empty cell */
+  @media (min-width: 48rem) and (max-width: 79.999rem) {
+    .product-grid > :nth-child(n + 7) { display: none; }
+    .product-grid-related > :nth-child(n + 4) { display: none; }
+  }
+  @media (min-width: 80rem) {
+    .product-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  }
+
+  /* Image frames on a soft neutral */
+  .media-product { position: relative; aspect-ratio: 4 / 5; background: var(--color-subtle); overflow: hidden; }
+  .media-hero { position: relative; aspect-ratio: 4 / 5; background: var(--color-subtle); overflow: hidden; }
+  @media (min-width: 48rem) {
+    .media-hero { aspect-ratio: 16 / 9; }
+  }
+  .media-product > img, .media-hero > img { width: 100%; height: 100%; object-fit: cover; }
+
+  /* Sticky header shell with hairline bottom border */
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    height: var(--header-height);
+    display: flex;
+    align-items: center;
+    background: var(--color-background);
+    border-bottom: 1px solid var(--color-line);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  * { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
 }
