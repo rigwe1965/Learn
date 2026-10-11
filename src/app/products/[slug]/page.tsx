@@ -7,20 +7,21 @@ import { ProductGallery } from "@/components/product-gallery";
 import { ProductInfo } from "@/components/product-info";
 import { SectionHeading } from "@/components/section-heading";
 import {
-  featuredProducts,
   getProductBySlug,
+  getProducts,
   getRelatedProducts,
-} from "@/data/catalog";
+} from "@/db/queries";
 
-export function generateStaticParams() {
-  return featuredProducts.map((p) => ({ slug: p.slug }));
+export async function generateStaticParams() {
+  const products = await getProducts();
+  return products.map((p) => ({ slug: p.slug }));
 }
 
 export async function generateMetadata(
   props: PageProps<"/products/[slug]">,
 ): Promise<Metadata> {
   const { slug } = await props.params;
-  const product = getProductBySlug(slug);
+  const product = await getProductBySlug(slug);
   if (!product) return {};
   return { title: product.name, description: product.description };
 }
@@ -39,10 +40,10 @@ async function ProductDetails({
   params: PageProps<"/products/[slug]">["params"];
 }) {
   const { slug } = await params;
-  const product = getProductBySlug(slug);
+  const product = await getProductBySlug(slug);
   if (!product) notFound();
 
-  const related = getRelatedProducts(product);
+  const related = await getRelatedProducts(product);
 
   return (
     <main>

@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { CollectionGrid } from "@/components/collection-grid";
 import { EditorialBanner } from "@/components/editorial-banner";
 import { FeaturedProducts } from "@/components/featured-products";
@@ -9,7 +10,9 @@ export default function Home() {
     <main>
       <Hero />
       <CollectionGrid />
-      <FeaturedProducts />
+      <Suspense fallback={<div className="container-page section" aria-hidden />}>
+        <FeaturedProducts />
+      </Suspense>
       <EditorialBanner />
       <ServicesStrip />
     </main>

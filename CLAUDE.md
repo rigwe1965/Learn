@@ -6,7 +6,7 @@ Next.js 16.4 (App Router, Turbopack), React 19.3, Tailwind v4, Drizzle + Neon Po
 
 ## Commands
 - `pnpm dev` / `build` / `lint`
-- `pnpm db:generate | db:migrate | db:push | db:studio` (drizzle-kit reads `.env.local`; see `.env.example`)
+- `pnpm db:generate | db:migrate | db:seed | db:studio` (drizzle-kit reads `.env.local`; see `.env.example`)
 
 ## Next.js rules (breaking-change version)
 - Read `node_modules/next/dist/docs/` before writing Next code.
@@ -17,9 +17,17 @@ Next.js 16.4 (App Router, Turbopack), React 19.3, Tailwind v4, Drizzle + Neon Po
 ## Layout
 - `src/app/` routes: `/` and `/products/[slug]`; auth handler at `api/auth/[...all]`.
 - `src/components/` one component per file, kebab-case filenames, named exports.
-- `src/data/catalog.ts` static placeholder catalog and helpers (`getProductBySlug`, `getRelatedProducts`, `formatPrice`, `getStockState`). Swap for `src/db` queries later; `src/db/schema.ts` is still empty.
+- `src/data/catalog.ts` static content only (hero, nav, collections, footer), the `Product` type, `formatPrice`, `getStockState`.
 - `src/lib/auth.ts` (server) and `auth-client.ts` (client). Import alias `@/*` → `src/*`.
 - Remote images only from `images.unsplash.com` (`next.config.ts`); add new hosts there.
+
+## Database (Drizzle + Neon)
+- Tables: `categories`, `products`, `stock` (1:1 with products, own table because it changes most). No carts/orders/payments/reviews/wishlists/variants yet.
+- Money is integer cents (`price_cents`); queries convert to dollars so components keep the `Product` shape.
+- Read only through `src/db/queries.ts` (`"use cache"` + `cacheTag("products")`). After any write, call `updateTag("products")`.
+- Schema changes: edit `src/db/schema.ts` → `pnpm db:generate` → review SQL in `drizzle/` → `pnpm db:migrate`. Never `db:push`. Commit the migrations.
+- `src/db/seed.ts` is idempotent (upserts by slug); keep slugs stable since they're URLs. `generateStaticParams` needs a seeded DB at build.
+- Better Auth tables, when added, go in a separate schema file re-exported from `schema.ts`.
 
 ## Design system (`src/app/globals.css`)
 Monochrome, square corners (radius tokens are 0), hairline borders, small tracked uppercase labels, generous whitespace. Use the `@theme` tokens (`text-muted`, `bg-subtle`, `border-line`, `text-accent`, `container-page`, `label`, `section`) rather than raw colors or sizes. Fonts: Inter (sans), Cormorant (display).
