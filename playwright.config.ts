@@ -17,6 +17,7 @@ export default defineConfig({
   webServer: {
     command: "pnpm dev",
     url: baseURL,
-    reuseExistingServer: true,
+    // These tests make privileged database writes; start the intended app.
+    reuseExistingServer: false,
   },
 });

@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { eq, inArray } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 import { db } from "../src/db";
 import { categories, products, user } from "../src/db/schema";
 import { createVerifiedUser } from "./helpers";
@@ -26,7 +26,12 @@ async function signIn(page: import("@playwright/test").Page, baseURL: string, em
 
 test.beforeAll(async ({ request, baseURL }) => {
   const adminId = await createVerifiedUser(request, baseURL!, adminEmail, PASSWORD);
-  await db.update(user).set({ role: "admin" }).where(eq(user.id, adminId));
+  const promoted = await db
+    .update(user)
+    .set({ role: "admin" })
+    .where(and(eq(user.id, adminId), eq(user.email, adminEmail)))
+    .returning({ id: user.id });
+  expect(promoted, "Expected exactly one matching admin fixture").toHaveLength(1);
   await createVerifiedUser(request, baseURL!, shopperEmail, PASSWORD);
 });
 
