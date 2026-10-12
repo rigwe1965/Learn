@@ -1,4 +1,4 @@
-import { asc, eq } from "drizzle-orm";
+import { asc, desc, eq } from "drizzle-orm";
 import { cacheLife, cacheTag } from "next/cache";
 import type { Product } from "@/data/catalog";
 import { db } from "./index";
@@ -52,6 +52,21 @@ export async function getProducts(): Promise<Product[]> {
     .innerJoin(categories, eq(products.categoryId, categories.id))
     .leftJoin(stock, eq(stock.productId, products.id))
     .orderBy(asc(products.id));
+  return rows.map(toProduct);
+}
+
+export async function getNewArrivals(count = 12): Promise<Product[]> {
+  "use cache";
+  cacheTag("products");
+  cacheLife("minutes");
+
+  const rows = await db
+    .select(productColumns)
+    .from(products)
+    .innerJoin(categories, eq(products.categoryId, categories.id))
+    .leftJoin(stock, eq(stock.productId, products.id))
+    .orderBy(desc(products.createdAt), desc(products.id))
+    .limit(count);
   return rows.map(toProduct);
 }
 
