@@ -71,10 +71,23 @@ test("creates an account and asks the user to verify their email", async ({
   await page.fill("#password", PASSWORD);
   await page.getByRole("button", { name: "Create account" }).click();
   await expect(page.getByRole("heading", { level: 1, name: "Check your email" })).toBeVisible();
-  await expect(page.getByRole("status")).toContainText(email);
+  await expect(page.getByText(email)).toBeVisible();
   // No session until the address is verified.
   const cookies = await context.cookies();
   expect(cookies.some((c) => c.name.includes("session_token"))).toBe(false);
+});
+
+test("lets the user resend the verification email", async ({ page }) => {
+  await page.fill("#name", "E2E Test");
+  await page.fill("#email", uniqueEmail());
+  await page.fill("#password", PASSWORD);
+  await page.getByRole("button", { name: "Create account" }).click();
+
+  const resend = page.getByRole("button", { name: "Resend email" });
+  await resend.click();
+  await expect(page.getByText("We’ve sent you a new link.")).toBeVisible();
+  // Throttled so it can't be spammed.
+  await expect(page.getByRole("button", { name: /Resend email in \d+s/ })).toBeDisabled();
 });
 
 test("doesn't reveal that an email is already registered", async ({

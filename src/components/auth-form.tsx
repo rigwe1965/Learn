@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { PasswordStrengthHint } from "@/components/password-strength-hint";
+import { ResendVerificationButton } from "@/components/resend-verification-button";
 import { authClient } from "@/lib/auth-client";
 
 type Mode = "sign-in" | "sign-up";
@@ -78,10 +79,13 @@ export function AuthForm({ mode }: { mode: Mode }) {
         </h1>
 
         {sentTo ? (
-          <p role="status">
-            We&rsquo;ve sent a verification link to {sentTo}. Open it to activate your
-            account, then sign in.
-          </p>
+          <>
+            <p role="status">
+              We&rsquo;ve sent a verification link to {sentTo}. Open it to activate your
+              account, then sign in.
+            </p>
+            <ResendVerificationButton email={sentTo} />
+          </>
         ) : (
           <>
             {mode === "sign-in" && justReset && (
