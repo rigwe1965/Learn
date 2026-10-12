@@ -101,3 +101,31 @@ export async function getCategories() {
 
   return db.select().from(categories).orderBy(asc(categories.id));
 }
+
+export async function getCategoryBySlug(slug: string) {
+  "use cache";
+  cacheTag("products");
+  cacheLife("minutes");
+
+  const [row] = await db
+    .select()
+    .from(categories)
+    .where(eq(categories.slug, slug))
+    .limit(1);
+  return row;
+}
+
+export async function getProductsByCategory(slug: string): Promise<Product[]> {
+  "use cache";
+  cacheTag("products");
+  cacheLife("minutes");
+
+  const rows = await db
+    .select(productColumns)
+    .from(products)
+    .innerJoin(categories, eq(products.categoryId, categories.id))
+    .leftJoin(stock, eq(stock.productId, products.id))
+    .where(eq(categories.slug, slug))
+    .orderBy(asc(products.id));
+  return rows.map(toProduct);
+}

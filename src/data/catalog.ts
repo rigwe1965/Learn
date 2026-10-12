@@ -31,8 +31,8 @@ export const navLinks = [
   { label: "New arrivals", href: "/new-arrivals" },
   { label: "Women", href: "#" },
   { label: "Men", href: "#" },
-  { label: "Bags", href: "#" },
-  { label: "Shoes", href: "#" },
+  { label: "Bags", href: "/categories/bags" },
+  { label: "Shoes", href: "/categories/shoes" },
   { label: "Accessories", href: "#" },
 ];
 
@@ -63,7 +63,7 @@ export const collections: Collection[] = [
   {
     slug: "bags",
     title: "Bags",
-    href: "#",
+    href: "/categories/bags",
     image: img("1584917865442-de89df76afd3"),
     alt: "Red structured handbag",
   },
