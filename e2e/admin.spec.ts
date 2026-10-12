@@ -1,10 +1,12 @@
+import { randomBytes } from "node:crypto";
 import { expect, test } from "@playwright/test";
 import { and, eq, inArray } from "drizzle-orm";
 import { db } from "../src/db";
 import { categories, products, user } from "../src/db/schema";
 import { createVerifiedUser } from "./helpers";
 
-const PASSWORD = "correct-horse-battery";
+// Keep the fixture credential private even when catalog data reveals its email.
+const PASSWORD = randomBytes(32).toString("hex");
 
 // Local dev uses the live Neon branch, so every record this file creates carries
 // a unique suffix and is removed afterwards (stock/session rows cascade).
@@ -44,6 +46,15 @@ test.afterAll(async () => {
 test("sends a signed-out visitor to sign in", async ({ page }) => {
   await page.goto("/admin/products");
   await expect(page).toHaveURL(/\/sign-in$/);
+});
+
+test("rejects the former fixed password for the admin fixture", async ({ request, baseURL }) => {
+  const res = await request.post("/api/auth/sign-in/email", {
+    headers: { Origin: baseURL! },
+    data: { email: adminEmail, password: "correct-horse-battery" },
+  });
+  expect(res.status()).toBe(401);
+  expect((await res.json()).code).toBe("INVALID_EMAIL_OR_PASSWORD");
 });
 
 test("shows a not-found page to a signed-in shopper without the admin role", async ({ page, baseURL }) => {
