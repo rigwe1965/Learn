@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
 
@@ -26,6 +26,7 @@ const COPY = {
 
 export function AuthForm({ mode }: { mode: Mode }) {
   const router = useRouter();
+  const justReset = useSearchParams().get("reset") === "1";
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const copy = COPY[mode];
@@ -63,6 +64,12 @@ export function AuthForm({ mode }: { mode: Mode }) {
           {copy.title}
         </h1>
 
+        {mode === "sign-in" && justReset && (
+          <p role="status" className="mb-6 text-sm">
+            Your password has been updated. Sign in with your new password.
+          </p>
+        )}
+
         <form onSubmit={onSubmit} className="space-y-6">
           {mode === "sign-up" && (
             <div>
@@ -91,6 +98,14 @@ export function AuthForm({ mode }: { mode: Mode }) {
               required
             />
           </div>
+
+          {mode === "sign-in" && (
+            <p className="text-right text-sm">
+              <Link href="/forgot-password" className="link text-muted">
+                Forgot password?
+              </Link>
+            </p>
+          )}
 
           <p role="alert" className="min-h-5 text-sm text-danger">
             {error}
