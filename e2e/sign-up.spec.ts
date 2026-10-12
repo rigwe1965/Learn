@@ -1,0 +1,79 @@
+import { expect, test } from "@playwright/test";
+import { inArray } from "drizzle-orm";
+import { db } from "../src/db";
+import { user } from "../src/db/schema";
+
+const PASSWORD = "correct-horse-battery";
+
+// Local dev uses the live Neon branch, so every address created here is
+// tracked and removed afterwards (session/account rows cascade).
+const created: string[] = [];
+function uniqueEmail() {
+  const email = `e2e-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@example.com`;
+  created.push(email);
+  return email;
+}
+
+test.afterAll(async () => {
+  if (created.length > 0) {
+    await db.delete(user).where(inArray(user.email, created));
+  }
+});
+
+test.beforeEach(async ({ page }) => {
+  await page.goto("/sign-up");
+});
+
+test("renders the sign-up form without horizontal scroll", async ({ page }) => {
+  await expect(page.getByRole("heading", { level: 1, name: "Create account" })).toBeVisible();
+  await expect(page.locator("#name")).toBeVisible();
+  const fits = await page.evaluate(
+    () => document.documentElement.scrollWidth <= window.innerWidth,
+  );
+  expect(fits).toBe(true);
+});
+
+test("blocks an empty submit", async ({ page }) => {
+  await page.getByRole("button", { name: "Create account" }).click();
+  await expect(page.locator("#name:invalid")).toHaveCount(1);
+  await expect(page).toHaveURL(/\/sign-up$/);
+});
+
+test("blocks a password shorter than 8 characters", async ({ page }) => {
+  await page.fill("#name", "E2E Test");
+  await page.fill("#email", uniqueEmail());
+  await page.fill("#password", "short");
+  await page.getByRole("button", { name: "Create account" }).click();
+  await expect(page.locator("#password:invalid")).toHaveCount(1);
+  await expect(page).toHaveURL(/\/sign-up$/);
+});
+
+test("creates an account and signs the user in", async ({ page, context }) => {
+  await page.fill("#name", "E2E Test");
+  await page.fill("#email", uniqueEmail());
+  await page.fill("#password", PASSWORD);
+  await page.getByRole("button", { name: "Create account" }).click();
+  await expect(page).toHaveURL("/");
+  const cookies = await context.cookies();
+  expect(cookies.some((c) => c.name.includes("session_token"))).toBe(true);
+});
+
+test("shows an error when the email is already registered", async ({
+  page,
+  request,
+  baseURL,
+}) => {
+  const email = uniqueEmail();
+  const res = await request.post("/api/auth/sign-up/email", {
+    headers: { Origin: baseURL! },
+    data: { name: "E2E Existing", email, password: PASSWORD },
+  });
+  expect(res.ok()).toBeTruthy();
+
+  await page.fill("#name", "E2E Test");
+  await page.fill("#email", email);
+  await page.fill("#password", PASSWORD);
+  await page.getByRole("button", { name: "Create account" }).click();
+  await expect(page.locator("p[role=alert]")).toContainText(/already exists/i);
+  await expect(page).toHaveURL(/\/sign-up$/);
+});
