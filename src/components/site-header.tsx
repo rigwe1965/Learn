@@ -5,11 +5,13 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { BRAND, navLinks } from "@/data/catalog";
 import { authClient } from "@/lib/auth-client";
+import { useCart } from "@/lib/cart";
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const router = useRouter();
   const { data: session } = authClient.useSession();
+  const { count } = useCart();
 
   async function signOut() {
     setOpen(false);
@@ -58,7 +60,7 @@ export function SiteHeader() {
               Sign out
             </button>
           )}
-          <Link href="#">Bag (0)</Link>
+          <Link href="/cart">Bag ({count})</Link>
         </div>
       </div>
 

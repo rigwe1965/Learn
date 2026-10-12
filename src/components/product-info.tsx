@@ -1,4 +1,5 @@
 import { formatPrice, getStockState, type Product } from "@/data/catalog";
+import { AddToBagButton } from "./add-to-bag-button";
 import { StockStatus } from "./stock-status";
 
 const panel = "group border-t border-line py-5 [&_summary]:cursor-pointer [&_summary]:list-none";
@@ -19,9 +20,7 @@ export function ProductInfo({ product }: { product: Product }) {
       <p className="mt-8 max-w-prose text-base">{product.description}</p>
 
       <div className="mt-8">
-        <button type="button" className="btn btn-block" disabled={soldOut}>
-          {soldOut ? "Sold out" : "Add to bag"}
-        </button>
+        <AddToBagButton product={product} soldOut={soldOut} />
       </div>
 
       <div className="mt-10 border-b border-line">
