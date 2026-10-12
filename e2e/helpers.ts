@@ -1,5 +1,5 @@
 import { expect, type APIRequestContext } from "@playwright/test";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { db } from "../src/db";
 import { user } from "../src/db/schema";
 
@@ -17,6 +17,12 @@ export async function createVerifiedUser(
   });
   expect(res.ok()).toBeTruthy();
   const id: string = (await res.json()).user.id;
-  await db.update(user).set({ emailVerified: true }).where(eq(user.id, id));
+  // The HTTP response must not choose a privileged write outside this fixture.
+  const verified = await db
+    .update(user)
+    .set({ emailVerified: true })
+    .where(and(eq(user.id, id), eq(user.email, email)))
+    .returning({ id: user.id });
+  expect(verified, "Expected exactly one matching signup fixture").toHaveLength(1);
   return id;
 }
