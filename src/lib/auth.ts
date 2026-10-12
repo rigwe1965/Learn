@@ -4,8 +4,8 @@ import { db } from "@/db";
 import * as schema from "@/db/schema";
 
 // No email provider is wired up yet: in development the link is printed to the
-// server log. Production must not log tokens, so it fails loudly until a
-// provider is added here.
+// server log. Production must not log tokens, so delivery fails until a
+// provider is added here. Public callbacks must contain delivery failures.
 function sendEmail(subject: string, to: string, url: string) {
   if (process.env.NODE_ENV === "production") {
     throw new Error("Email delivery is not configured");
@@ -42,7 +42,14 @@ export const auth = betterAuth({
     sendOnSignUp: true,
     sendOnSignIn: true,
     sendVerificationEmail: async ({ user, url }) => {
-      sendEmail("Verification link", user.email, url);
+      try {
+        await sendEmail("Verification link", user.email, url);
+      } catch {
+        // Resend only delivers for existing unverified users. Let Better Auth
+        // return its generic response even if delivery fails, to avoid enumeration.
+        // Do not log the error: a provider may include addresses or token URLs.
+        console.error("[auth] Verification email delivery failed");
+      }
     },
   },
 });
