@@ -23,6 +23,14 @@ export const auth = betterAuth({
       sendEmail("Password reset link", user.email, url);
     },
   },
+  // Better Auth enables rate limiting in production only. Counts live in the
+  // database so the limit holds across serverless instances and restarts.
+  rateLimit: {
+    storage: "database",
+    customRules: {
+      "/sign-in/email": { window: 60, max: 5 },
+    },
+  },
   user: { deleteUser: { enabled: true } },
   emailVerification: {
     sendOnSignUp: true,
