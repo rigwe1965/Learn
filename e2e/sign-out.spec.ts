@@ -34,14 +34,15 @@ test("signs the user out from the header", async ({ page, baseURL }) => {
     await page.getByRole("button", { name: "Menu" }).click();
   }
   const nav = mobile ? page.locator("#mobile-nav") : page.locator("header");
-  await expect(nav.getByRole("link", { name: "Account", exact: true })).toHaveCount(0);
+  const account = nav.getByRole("link", { name: "Account", exact: true });
+  await expect(account).toHaveAttribute("href", "/account");
   await nav.getByRole("button", { name: "Sign out" }).click();
 
   await expect(page).toHaveURL("/");
   if (mobile) {
     await page.getByRole("button", { name: "Menu" }).click();
   }
-  await expect(nav.getByRole("link", { name: "Account", exact: true })).toBeVisible();
+  await expect(account).toHaveAttribute("href", "/sign-in");
   await expect(nav.getByRole("button", { name: "Sign out" })).toHaveCount(0);
 
   const cookies = await page.context().cookies();

@@ -50,14 +50,13 @@ export function SiteHeader() {
           <Link href="#" className="hidden sm:inline">
             Search
           </Link>
-          {session ? (
+          <Link href={session ? "/account" : "/sign-in"} className="hidden sm:inline">
+            Account
+          </Link>
+          {session && (
             <button type="button" className="label hidden sm:inline" onClick={signOut}>
               Sign out
             </button>
-          ) : (
-            <Link href="/sign-in" className="hidden sm:inline">
-              Account
-            </Link>
           )}
           <Link href="#">Bag (0)</Link>
         </div>
@@ -82,20 +81,21 @@ export function SiteHeader() {
               </li>
             ))}
             <li className="sm:hidden">
-              {session ? (
+              <Link
+                href={session ? "/account" : "/sign-in"}
+                className="display block py-4 text-xl"
+                onClick={() => setOpen(false)}
+              >
+                Account
+              </Link>
+            </li>
+            {session && (
+              <li className="sm:hidden">
                 <button type="button" className="display block py-4 text-xl" onClick={signOut}>
                   Sign out
                 </button>
-              ) : (
-                <Link
-                  href="/sign-in"
-                  className="display block py-4 text-xl"
-                  onClick={() => setOpen(false)}
-                >
-                  Account
-                </Link>
-              )}
-            </li>
+              </li>
+            )}
           </ul>
         </nav>
       )}
