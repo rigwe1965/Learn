@@ -15,5 +15,4 @@ $ARGUMENTS
 6. Run and visually verify the application.
 7. Run the normal project checks.
 8. Fix reproducible issues without expanding scope.
-9. Summarize what changed.
-
+9. Summarize what changed
