@@ -8,6 +8,13 @@
       "when": 1791722573724,
       "tag": "0000_bouncy_xorn",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1791798837780,
+      "tag": "0001_sticky_archangel",
+      "breakpoints": true
     }
   ]
 }
