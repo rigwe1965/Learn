@@ -68,6 +68,6 @@ test("verification resend preserves public responses when production delivery fa
   assert.equal((await resend("unverified@example.com", "192.0.2.3")).status, 200);
   assert.equal(log.mock.callCount(), 1, "Development should still deliver via the server log");
   const loggedLink = String(log.mock.calls[0].arguments[0]);
-  assert.match(loggedLink, /Verification link for unverified@example\.com:/);
+  assert.match(loggedLink, /Verify your Atelier Nord email for unverified@example\.com:/);
   assert.match(loggedLink, /\/verify-email\?token=/);
 });

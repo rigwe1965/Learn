@@ -88,6 +88,10 @@ export function removeFromCart(slug: string) {
   commit(getSnapshot().filter((i) => i.slug !== slug));
 }
 
+export function clearCart() {
+  commit(EMPTY);
+}
+
 export function useCart() {
   const cart = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
   return {

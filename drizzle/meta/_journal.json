@@ -29,6 +29,20 @@
       "when": 1791820012182,
       "tag": "0003_rainy_red_ghost",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1791822390963,
+      "tag": "0004_simple_thaddeus_ross",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1791831375268,
+      "tag": "0005_colorful_lizard",
+      "breakpoints": true
     }
   ]
 }

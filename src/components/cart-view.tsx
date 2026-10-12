@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { CheckoutButton } from "@/components/checkout-button";
 import { formatPrice } from "@/data/catalog";
 import { removeFromCart, setQuantity, useCart } from "@/lib/cart";
 
@@ -108,9 +109,7 @@ export function CartView() {
             <dd>{shipping}</dd>
           </div>
         </dl>
-        <button type="button" className="btn btn-block mt-8" disabled>
-          Checkout coming soon
-        </button>
+        <CheckoutButton items={items.map(({ slug, quantity }) => ({ slug, quantity }))} />
         <p className="mt-4 text-xs text-muted">
           Complimentary shipping on orders over {formatPrice(FREE_SHIPPING_OVER)}.
         </p>

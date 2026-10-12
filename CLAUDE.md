@@ -27,7 +27,8 @@ Next.js 16.4 (App Router, Turbopack), React 19.3, Tailwind v4, Drizzle + Neon Po
 
 ## Database (Drizzle + Neon)
 
-- Tables: `categories`, `products`, `stock` (1:1 with products, own table because it changes most). No carts/orders/payments/reviews/wishlists/variants yet.
+- Tables: `categories`, `products`, `stock` (1:1 with products, own table because it changes most), `orders` (one per paid Stripe Checkout Session; items and shipping address are jsonb snapshots, so orders survive product edits). No server-side carts/reviews/wishlists/variants yet; the cart is localStorage (`src/lib/cart.ts`).
+- Checkout: `POST /api/checkout` re-reads prices and stock from the DB (only slugs and quantities come from the client) and creates a Stripe Checkout Session stamped `metadata.source = "atelier-nord"` with each product's slug. `fulfillCheckoutSession` (`src/lib/stripe.ts`) ignores sessions without that stamp. Both the webhook (`/api/stripe/webhook`) and `/checkout/success` call it. `createOrder` (`src/db/orders.ts`) inserts the order and reduces stock in one statement, idempotent on `stripe_session_id`; stock clamps at 0 since the buyer has already paid. Needs `STRIPE_SECRET_KEY` (+ `STRIPE_WEBHOOK_SECRET`); use test keys locally.
 - Money is integer cents (`price_cents`); queries convert to dollars so components keep the `Product` shape.
 - Read only through `src/db/queries.ts` (`"use cache"` + `cacheTag("products")`). After any write, call `updateTag("products")`.
 - Schema changes: edit `src/db/schema.ts` → `pnpm db:generate` → review SQL in `drizzle/` → `pnpm db:migrate`. Never `db:push`. Commit the migrations.

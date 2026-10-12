@@ -3,11 +3,13 @@ import {
   check,
   index,
   integer,
+  jsonb,
   pgTable,
   serial,
   text,
   timestamp,
 } from "drizzle-orm/pg-core";
+import { user } from "./auth-schema";
 
 export * from "./auth-schema";
 
@@ -54,6 +56,49 @@ export const stock = pgTable(
       .defaultNow(),
   },
   (t) => [check("stock_quantity_check", sql`${t.quantity} >= 0`)],
+);
+
+export type OrderItem = {
+  // Product slug at purchase time; used to take the quantity out of stock.
+  slug?: string;
+  name: string;
+  quantity: number;
+  unitPriceCents: number;
+};
+
+// Where to ship, as collected by Stripe Checkout.
+export type ShippingAddress = {
+  name: string;
+  line1: string | null;
+  line2: string | null;
+  city: string | null;
+  state: string | null;
+  postalCode: string | null;
+  country: string | null;
+};
+
+// A paid Stripe Checkout session. Items are a snapshot (jsonb) so an order
+// survives later product edits and is written in one atomic statement.
+export const orders = pgTable(
+  "orders",
+  {
+    id: serial("id").primaryKey(),
+    stripeSessionId: text("stripe_session_id").notNull().unique(),
+    userId: text("user_id").references(() => user.id, { onDelete: "set null" }),
+    email: text("email"),
+    items: jsonb("items").$type<OrderItem[]>().notNull(),
+    shippingAddress: jsonb("shipping_address").$type<ShippingAddress>(),
+    shippingCents: integer("shipping_cents").notNull().default(0),
+    totalCents: integer("total_cents").notNull(),
+    currency: text("currency").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (t) => [
+    index("orders_user_id_idx").on(t.userId),
+    check("orders_total_cents_check", sql`${t.totalCents} >= 0`),
+  ],
 );
 
 export const categoriesRelations = relations(categories, ({ many }) => ({

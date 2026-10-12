@@ -6,12 +6,15 @@ import { expect, type Page, test } from "@playwright/test";
 // Opens the first product that can be bought and returns its name.
 async function openBuyableProduct(page: Page) {
   await page.goto("/products");
-  const hrefs = await page
-    .locator("main a[href^='/products/']")
-    .evaluateAll((links) => [...new Set(links.map((a) => a.getAttribute("href")!))]);
+  // The list streams in after the page loads, so wait for it before reading links.
+  const links = page.locator("main a[href^='/products/']");
+  await links.first().waitFor();
+  const hrefs = await links.evaluateAll((els) => [...new Set(els.map((a) => a.getAttribute("href")!))]);
 
   for (const href of hrefs) {
     await page.goto(href);
+    // Sold-out products show a disabled "Sold out" button instead.
+    await page.getByRole("button", { name: /^(Add to bag|Sold out)$/ }).waitFor();
     if (await page.getByRole("button", { name: "Add to bag" }).isEnabled()) {
       return (await page.getByRole("heading", { level: 1 }).innerText()).trim();
     }
@@ -41,7 +44,7 @@ test("adds a product, keeps it after a reload, and lists it in the bag", async (
   await expect(main.getByRole("heading", { level: 2, name })).toBeVisible();
   await expect(main.getByRole("group", { name: `Quantity for ${name}` })).toContainText("1");
   await expect(main.getByText("Subtotal (1 item)")).toBeVisible();
-  await expect(main.getByRole("button", { name: "Checkout coming soon" })).toBeDisabled();
+  await expect(main.getByRole("button", { name: "Checkout", exact: true })).toBeEnabled();
 
   await page.reload();
   await expect(main.getByRole("heading", { level: 2, name })).toBeVisible();
