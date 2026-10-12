@@ -39,7 +39,7 @@ export function SiteHeader() {
           <Link href="#" className="hidden sm:inline">
             Search
           </Link>
-          <Link href="#" className="hidden sm:inline">
+          <Link href="/sign-in" className="hidden sm:inline">
             Account
           </Link>
           <Link href="#">Bag (0)</Link>
