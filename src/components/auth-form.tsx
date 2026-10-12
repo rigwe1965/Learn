@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
+import { PasswordStrengthHint } from "@/components/password-strength-hint";
 import { authClient } from "@/lib/auth-client";
 
 type Mode = "sign-in" | "sign-up";
@@ -29,6 +30,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
   const justReset = useSearchParams().get("reset") === "1";
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
+  const [password, setPassword] = useState("");
   const copy = COPY[mode];
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -96,7 +98,15 @@ export function AuthForm({ mode }: { mode: Mode }) {
               autoComplete={mode === "sign-up" ? "new-password" : "current-password"}
               minLength={8}
               required
+              {...(mode === "sign-up" && {
+                value: password,
+                onChange: (e) => setPassword(e.target.value),
+                "aria-describedby": "password-hint",
+              })}
             />
+            {mode === "sign-up" && (
+              <PasswordStrengthHint id="password-hint" password={password} />
+            )}
           </div>
 
           {mode === "sign-in" && (

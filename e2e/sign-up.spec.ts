@@ -33,6 +33,19 @@ test("renders the sign-up form without horizontal scroll", async ({ page }) => {
   expect(fits).toBe(true);
 });
 
+test("shows a live password strength hint", async ({ page }) => {
+  const hint = page.locator("#password-hint");
+  await expect(hint).toContainText("Use at least 8 characters");
+  await page.fill("#password", "abc");
+  await expect(hint).toContainText("Use at least 8 characters");
+  await page.fill("#password", "abcdefgh");
+  await expect(hint).toContainText("Strength: Weak");
+  await page.fill("#password", "Abcdefgh1");
+  await expect(hint).toContainText("Strength: Fair");
+  await page.fill("#password", "Correct-Horse-Battery-9");
+  await expect(hint).toContainText("Strength: Strong");
+});
+
 test("blocks an empty submit", async ({ page }) => {
   await page.getByRole("button", { name: "Create account" }).click();
   await expect(page.locator("#name:invalid")).toHaveCount(1);
