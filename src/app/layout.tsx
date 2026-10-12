@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import { Inter, Cormorant_Garamond } from "next/font/google";
-import { SiteFooter } from "@/components/site-footer";
-import { SiteHeader } from "@/components/site-header";
 import { BRAND } from "@/data/catalog";
 import "./globals.css";
 
@@ -28,9 +26,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${inter.variable} ${cormorant.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <SiteHeader />
         {children}
-        <SiteFooter />
       </body>
     </html>
   );

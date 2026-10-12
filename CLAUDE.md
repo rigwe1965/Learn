@@ -18,7 +18,8 @@ Next.js 16.4 (App Router, Turbopack), React 19.3, Tailwind v4, Drizzle + Neon Po
 
 ## Layout
 
-- `src/app/` routes: `/` and `/products/[slug]`; auth handler at `api/auth/[...all]`.
+- `src/app/` routes: storefront pages live in the `(shop)` group (its layout holds the header/footer); admin lives in `(admin)/admin` with its own chrome. The root layout is only fonts + `<html>`. Auth handler at `api/auth/[...all]`.
+- Admin (`/admin/products`, `/admin/categories`): access needs `user.role = 'admin'` and a verified email, granted by hand with SQL (no UI). Call `requireAdmin()` (`src/lib/admin.ts`) first in every admin server action (`(admin)/admin/actions.ts`) and in every function in `src/db/admin-queries.ts`; layouts and hidden links are not a boundary. Writes live in `src/db/mutations.ts`; actions validate with `src/lib/admin-validation.ts`, then `updateTag("products")`. Admin reads are uncached.
 - `src/components/` one component per file, kebab-case filenames, named exports.
 - `src/data/catalog.ts` static content only (hero, nav, collections, footer), the `Product` type, `formatPrice`, `getStockState`.
 - `src/lib/auth.ts` (server) and `auth-client.ts` (client). Import alias `@/*` → `src/*`.

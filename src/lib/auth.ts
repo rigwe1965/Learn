@@ -31,7 +31,13 @@ export const auth = betterAuth({
       "/sign-in/email": { window: 60, max: 5 },
     },
   },
-  user: { deleteUser: { enabled: true } },
+  user: {
+    deleteUser: { enabled: true },
+    additionalFields: {
+      // input: false keeps clients from setting their own role at sign-up or update.
+      role: { type: "string", defaultValue: "user", input: false },
+    },
+  },
   emailVerification: {
     sendOnSignUp: true,
     sendOnSignIn: true,
