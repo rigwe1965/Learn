@@ -44,3 +44,7 @@ next-env.d.ts
 
 # private prompt log (local only)
 prompts/
+
+# playwright
+/test-results/
+/playwright-report/
