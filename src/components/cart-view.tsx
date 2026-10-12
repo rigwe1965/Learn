@@ -27,7 +27,7 @@ export function CartView() {
   return (
     <div className="grid gap-10 lg:grid-cols-12 lg:gap-12">
       <ul className="divider-y border-y border-line lg:col-span-8">
-        {items.map((item) => (
+        {items.map((item, index) => (
           <li
             key={item.slug}
             className="grid grid-cols-[6rem_1fr] gap-4 py-6 sm:grid-cols-[8rem_1fr] sm:gap-6"
@@ -37,6 +37,7 @@ export function CartView() {
                 src={item.image}
                 alt={item.alt}
                 fill
+                loading={index === 0 ? "eager" : "lazy"}
                 sizes="(min-width: 640px) 8rem, 6rem"
                 className="object-cover"
               />
