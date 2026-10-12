@@ -23,6 +23,7 @@ export const auth = betterAuth({
       sendEmail("Password reset link", user.email, url);
     },
   },
+  user: { deleteUser: { enabled: true } },
   emailVerification: {
     sendOnSignUp: true,
     sendOnSignIn: true,

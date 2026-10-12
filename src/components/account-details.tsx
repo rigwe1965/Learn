@@ -1,6 +1,7 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { ChangePasswordForm } from "@/components/change-password-form";
+import { DeleteAccountForm } from "@/components/delete-account-form";
 import { SignOutButton } from "@/components/sign-out-button";
 import { auth } from "@/lib/auth";
 
@@ -36,6 +37,9 @@ export async function AccountDetails() {
       </div>
       <div className="mt-12">
         <SignOutButton />
+      </div>
+      <div className="mt-12 border-t border-line pt-12">
+        <DeleteAccountForm />
       </div>
     </>
   );
