@@ -2,6 +2,7 @@ import { expect, test } from "@playwright/test";
 import { and, eq, like } from "drizzle-orm";
 import { db } from "../src/db";
 import { user, verification } from "../src/db/schema";
+import { createVerifiedUser } from "./helpers";
 
 const PASSWORD = "correct-horse-battery";
 const NEW_PASSWORD = "even-better-staple-9";
@@ -13,12 +14,7 @@ const email = `e2e-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@examp
 let userId: string;
 
 test.beforeAll(async ({ request, baseURL }) => {
-  const res = await request.post("/api/auth/sign-up/email", {
-    headers: { Origin: baseURL! },
-    data: { name: "E2E Test", email, password: PASSWORD },
-  });
-  expect(res.ok()).toBeTruthy();
-  userId = (await res.json()).user.id;
+  userId = await createVerifiedUser(request, baseURL!, email, PASSWORD);
 });
 
 test.afterAll(async () => {

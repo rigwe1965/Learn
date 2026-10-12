@@ -31,6 +31,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const [password, setPassword] = useState("");
+  const [sentTo, setSentTo] = useState<string | null>(null);
   const copy = COPY[mode];
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -47,11 +48,21 @@ export function AuthForm({ mode }: { mode: Mode }) {
             name: String(data.get("name")),
             email,
             password,
+            callbackURL: "/verify-email",
           })
         : await authClient.signIn.email({ email, password });
 
     if (error) {
-      setError(error.message ?? "Something went wrong. Please try again.");
+      setError(
+        error.code === "EMAIL_NOT_VERIFIED"
+          ? "Please verify your email first. We’ve sent you a new link."
+          : (error.message ?? "Something went wrong. Please try again."),
+      );
+      setPending(false);
+      return;
+    }
+    if (mode === "sign-up") {
+      setSentTo(email);
       setPending(false);
       return;
     }
@@ -63,68 +74,77 @@ export function AuthForm({ mode }: { mode: Mode }) {
     <section className="container-page section" aria-labelledby="auth-title">
       <div className="mx-auto w-full max-w-md">
         <h1 id="auth-title" className="mb-8 md:mb-12">
-          {copy.title}
+          {sentTo ? "Check your email" : copy.title}
         </h1>
 
-        {mode === "sign-in" && justReset && (
-          <p role="status" className="mb-6 text-sm">
-            Your password has been updated. Sign in with your new password.
+        {sentTo ? (
+          <p role="status">
+            We&rsquo;ve sent a verification link to {sentTo}. Open it to activate your
+            account, then sign in.
           </p>
-        )}
-
-        <form onSubmit={onSubmit} className="space-y-6">
-          {mode === "sign-up" && (
-            <div>
-              <label htmlFor="name" className="label text-muted">
-                Name
-              </label>
-              <input id="name" name="name" type="text" autoComplete="name" required />
-            </div>
-          )}
-          <div>
-            <label htmlFor="email" className="label text-muted">
-              Email
-            </label>
-            <input id="email" name="email" type="email" autoComplete="email" required />
-          </div>
-          <div>
-            <label htmlFor="password" className="label text-muted">
-              Password
-            </label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              autoComplete={mode === "sign-up" ? "new-password" : "current-password"}
-              minLength={8}
-              required
-              {...(mode === "sign-up" && {
-                value: password,
-                onChange: (e) => setPassword(e.target.value),
-                "aria-describedby": "password-hint",
-              })}
-            />
-            {mode === "sign-up" && (
-              <PasswordStrengthHint id="password-hint" password={password} />
+        ) : (
+          <>
+            {mode === "sign-in" && justReset && (
+              <p role="status" className="mb-6 text-sm">
+                Your password has been updated. Sign in with your new password.
+              </p>
             )}
-          </div>
 
-          {mode === "sign-in" && (
-            <p className="text-right text-sm">
-              <Link href="/forgot-password" className="link text-muted">
-                Forgot password?
-              </Link>
-            </p>
-          )}
+            <form onSubmit={onSubmit} className="space-y-6">
+              {mode === "sign-up" && (
+                <div>
+                  <label htmlFor="name" className="label text-muted">
+                    Name
+                  </label>
+                  <input id="name" name="name" type="text" autoComplete="name" required />
+                </div>
+              )}
+              <div>
+                <label htmlFor="email" className="label text-muted">
+                  Email
+                </label>
+                <input id="email" name="email" type="email" autoComplete="email" required />
+              </div>
+              <div>
+                <label htmlFor="password" className="label text-muted">
+                  Password
+                </label>
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  autoComplete={mode === "sign-up" ? "new-password" : "current-password"}
+                  minLength={8}
+                  required
+                  {...(mode === "sign-up" && {
+                    value: password,
+                    onChange: (e) => setPassword(e.target.value),
+                    "aria-describedby": "password-hint",
+                  })}
+                />
+                {mode === "sign-up" && (
+                  <PasswordStrengthHint id="password-hint" password={password} />
+                )}
+              </div>
 
-          <p role="alert" className="min-h-5 text-sm text-danger">
-            {error}
-          </p>
+              {mode === "sign-in" && (
+                <p className="text-right text-sm">
+                  <Link href="/forgot-password" className="link text-muted">
+                    Forgot password?
+                  </Link>
+                </p>
+              )}
 
-          <button type="submit" className="btn btn-block" disabled={pending}>
-            {pending ? "Please wait…" : copy.submit}
-          </button>
-        </form>
+              <p role="alert" className="min-h-5 text-sm text-danger">
+                {error}
+              </p>
+
+              <button type="submit" className="btn btn-block" disabled={pending}>
+                {pending ? "Please wait…" : copy.submit}
+              </button>
+            </form>
+          </>
+        )}
 
         <p className="mt-8 text-center text-sm text-muted">
           {copy.alt}{" "}

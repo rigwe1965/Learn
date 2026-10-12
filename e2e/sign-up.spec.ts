@@ -61,17 +61,23 @@ test("blocks a password shorter than 8 characters", async ({ page }) => {
   await expect(page).toHaveURL(/\/sign-up$/);
 });
 
-test("creates an account and signs the user in", async ({ page, context }) => {
+test("creates an account and asks the user to verify their email", async ({
+  page,
+  context,
+}) => {
+  const email = uniqueEmail();
   await page.fill("#name", "E2E Test");
-  await page.fill("#email", uniqueEmail());
+  await page.fill("#email", email);
   await page.fill("#password", PASSWORD);
   await page.getByRole("button", { name: "Create account" }).click();
-  await expect(page).toHaveURL("/");
+  await expect(page.getByRole("heading", { level: 1, name: "Check your email" })).toBeVisible();
+  await expect(page.getByRole("status")).toContainText(email);
+  // No session until the address is verified.
   const cookies = await context.cookies();
-  expect(cookies.some((c) => c.name.includes("session_token"))).toBe(true);
+  expect(cookies.some((c) => c.name.includes("session_token"))).toBe(false);
 });
 
-test("shows an error when the email is already registered", async ({
+test("doesn't reveal that an email is already registered", async ({
   page,
   request,
   baseURL,
@@ -87,6 +93,7 @@ test("shows an error when the email is already registered", async ({
   await page.fill("#email", email);
   await page.fill("#password", PASSWORD);
   await page.getByRole("button", { name: "Create account" }).click();
-  await expect(page.locator("p[role=alert]")).toContainText(/already exists/i);
-  await expect(page).toHaveURL(/\/sign-up$/);
+  // Same confirmation as a new address, so sign-up can't be used to probe
+  // which emails have accounts.
+  await expect(page.getByRole("heading", { level: 1, name: "Check your email" })).toBeVisible();
 });
