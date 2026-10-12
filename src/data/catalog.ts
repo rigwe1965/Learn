@@ -29,11 +29,11 @@ export type Product = {
 
 export const navLinks = [
   { label: "New arrivals", href: "/new-arrivals" },
-  { label: "Women", href: "#" },
-  { label: "Men", href: "#" },
+  { label: "Women", href: "/categories/women" },
+  { label: "Men", href: "/categories/men" },
   { label: "Bags", href: "/categories/bags" },
   { label: "Shoes", href: "/categories/shoes" },
-  { label: "Accessories", href: "#" },
+  { label: "Accessories", href: "/categories/accessories" },
 ];
 
 export const hero = {
@@ -49,14 +49,14 @@ export const collections: Collection[] = [
   {
     slug: "women",
     title: "Women",
-    href: "#",
+    href: "/categories/women",
     image: img("1585487000160-6ebcfceb0d03"),
     alt: "Woman in a burgundy dress",
   },
   {
     slug: "men",
     title: "Men",
-    href: "#",
+    href: "/categories/men",
     image: img("1594938298603-c8148c4dae35"),
     alt: "Man in a blue checked suit",
   },
@@ -70,7 +70,7 @@ export const collections: Collection[] = [
   {
     slug: "accessories",
     title: "Accessories",
-    href: "#",
+    href: "/categories/accessories",
     image: img("1523275335684-37898b6baf30"),
     alt: "White minimalist watch",
   },

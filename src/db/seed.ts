@@ -17,7 +17,7 @@ const seedProducts = [
     "image": "https://images.unsplash.com/photo-1551028719-00167b16eac5?auto=format&fit=crop&q=80&w=800",
     "alt": "Black leather jacket on a white surface",
     "badge": "New",
-    "category": "Outerwear",
+    "category": "Men",
     "quantity": 8
   },
   {
@@ -51,7 +51,7 @@ const seedProducts = [
     "image": "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&q=80&w=800",
     "alt": "Rust-coloured bomber jacket on a hanger",
     "badge": null,
-    "category": "Outerwear",
+    "category": "Men",
     "quantity": 12
   },
   {
@@ -85,7 +85,7 @@ const seedProducts = [
     "image": "https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?auto=format&fit=crop&q=80&w=800",
     "alt": "Woman in a red floral dress",
     "badge": null,
-    "category": "Dresses",
+    "category": "Women",
     "quantity": 5
   },
   {
@@ -119,7 +119,7 @@ const seedProducts = [
     "image": "https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&q=80&w=800",
     "alt": "Woman in a floral wrap dress by the sea",
     "badge": null,
-    "category": "Dresses",
+    "category": "Women",
     "quantity": 9
   },
   {
@@ -136,7 +136,7 @@ const seedProducts = [
     "image": "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&q=80&w=800",
     "alt": "Navy backpack on a light floor",
     "badge": null,
-    "category": "Bags",
+    "category": "Accessories",
     "quantity": 20
   }
 ] as const;
