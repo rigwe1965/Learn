@@ -1,11 +1,22 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { BRAND, navLinks } from "@/data/catalog";
+import { authClient } from "@/lib/auth-client";
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
+  const router = useRouter();
+  const { data: session } = authClient.useSession();
+
+  async function signOut() {
+    setOpen(false);
+    await authClient.signOut();
+    router.push("/");
+    router.refresh();
+  }
 
   return (
     <header className="site-header">
@@ -39,9 +50,15 @@ export function SiteHeader() {
           <Link href="#" className="hidden sm:inline">
             Search
           </Link>
-          <Link href="/sign-in" className="hidden sm:inline">
-            Account
-          </Link>
+          {session ? (
+            <button type="button" className="label hidden sm:inline" onClick={signOut}>
+              Sign out
+            </button>
+          ) : (
+            <Link href="/sign-in" className="hidden sm:inline">
+              Account
+            </Link>
+          )}
           <Link href="#">Bag (0)</Link>
         </div>
       </div>
@@ -64,6 +81,21 @@ export function SiteHeader() {
                 </Link>
               </li>
             ))}
+            <li className="sm:hidden">
+              {session ? (
+                <button type="button" className="display block py-4 text-xl" onClick={signOut}>
+                  Sign out
+                </button>
+              ) : (
+                <Link
+                  href="/sign-in"
+                  className="display block py-4 text-xl"
+                  onClick={() => setOpen(false)}
+                >
+                  Account
+                </Link>
+              )}
+            </li>
           </ul>
         </nav>
       )}
