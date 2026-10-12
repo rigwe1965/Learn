@@ -32,6 +32,8 @@ Next.js 16.4 (App Router, Turbopack), React 19.3, Tailwind v4, Drizzle + Neon Po
 - Schema changes: edit `src/db/schema.ts` → `pnpm db:generate` → review SQL in `drizzle/` → `pnpm db:migrate`. Never `db:push`. Commit the migrations.
 - `src/db/seed.ts` is idempotent (upserts by slug); keep slugs stable since they're URLs. `generateStaticParams` needs a seeded DB at build.
 - Better Auth tables, when added, go in a separate schema file re-exported from `schema.ts`.
+- Local dev uses the Neon `production` branch (no separate dev branch): `pnpm db:migrate` and `pnpm db:seed` write to live data, so confirm before running them.
+- `.env.local` (gitignored) is written by `neon link` / `neon config init` with `DATABASE_URL`, `DATABASE_URL_UNPOOLED`, `NEON_BRANCH`; the link state lives in the gitignored `.neon`. Project `Learn` (`mute-heart-72771152`). Don't run `neon deploy` unless asked.
 
 ## Design system (`src/app/globals.css`)
 
