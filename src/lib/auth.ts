@@ -2,6 +2,7 @@ import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { db } from "@/db";
 import * as schema from "@/db/schema";
+import { limitSignInByAccount, signInRule } from "@/lib/auth-rate-limit";
 
 // No email provider is wired up yet: in development the link is printed to the
 // server log. Production must not log tokens, so delivery fails until a
@@ -28,9 +29,10 @@ export const auth = betterAuth({
   rateLimit: {
     storage: "database",
     customRules: {
-      "/sign-in/email": { window: 60, max: 5 },
+      "/sign-in/email": signInRule,
     },
   },
+  hooks: { before: limitSignInByAccount },
   user: {
     deleteUser: { enabled: true },
     additionalFields: {
